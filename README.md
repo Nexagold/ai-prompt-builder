@@ -25,8 +25,7 @@ Modern multilingual AI prompt builder built with HTML, CSS and JavaScript.
 (https://vercel.com/mehdihosenzade-s-projects/ai-prompt-builder)
 
 ## Screenshots
-
-Coming soon...
+screenshot.png
 
 ## Author
 
