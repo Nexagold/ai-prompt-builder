@@ -22,7 +22,7 @@ Modern multilingual AI prompt builder built with HTML, CSS and JavaScript.
 
 ## Live Demo
 
-https://ai-prompt-builder.vercel.app
+ai-prompt-builder-blue.vercel.app
 
 ## Screenshots
 screenshot.png
