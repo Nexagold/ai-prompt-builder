@@ -3,31 +3,21 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Research Prompt System</title>
+<title>Research Copilot v3</title>
 
 <style>
   body{
     margin:0;
-    font-family:system-ui, sans-serif;
+    font-family:system-ui;
     background:#0b1220;
     color:#e5e7eb;
     padding:30px;
   }
 
-  .container{
-    max-width:900px;
-    margin:auto;
-  }
+  .container{max-width:900px;margin:auto;}
 
-  h1{
-    font-size:22px;
-    margin-bottom:6px;
-  }
-
-  p{
-    color:#9ca3af;
-    margin-top:0;
-  }
+  h1{font-size:22px;margin-bottom:6px}
+  p{color:#9ca3af;margin-top:0}
 
   .card{
     background:#111827;
@@ -36,7 +26,7 @@
     margin-top:20px;
   }
 
-  input, select{
+  input,select{
     width:100%;
     padding:10px;
     margin-top:8px;
@@ -58,9 +48,7 @@
     cursor:pointer;
   }
 
-  button:hover{
-    background:#2563eb;
-  }
+  button:hover{background:#2563eb}
 
   .output{
     white-space:pre-wrap;
@@ -71,9 +59,14 @@
     border:1px solid #1f2937;
   }
 
-  .copy-btn{
-    margin-top:10px;
-    background:#22c55e;
+  .row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  @media(max-width:700px){
+    .row{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -82,25 +75,33 @@
 
 <div class="container">
 
-  <h1>Research Prompt System</h1>
-  <p>Turn any idea into structured research + execution prompts</p>
+  <h1>Research Copilot v3</h1>
+  <p>Decision-grade research system with analysis + ROI thinking</p>
 
   <div class="card">
 
-    <input id="topic" placeholder="Enter your research topic...">
+    <input id="topic" placeholder="Enter research topic...">
 
-    <select id="depth">
-      <option value="simple">Simple</option>
-      <option value="standard" selected>Standard</option>
-      <option value="deep">Deep Research</option>
-    </select>
+    <div class="row">
+      <select id="depth">
+        <option value="basic">Basic</option>
+        <option value="standard" selected>Standard</option>
+        <option value="deep">Deep Analysis</option>
+      </select>
 
-    <button onclick="generate()">Generate System</button>
+      <select id="mode">
+        <option value="business">Business Impact</option>
+        <option value="productivity">Productivity</option>
+        <option value="market">Market Analysis</option>
+      </select>
+    </div>
+
+    <button onclick="generate()">Generate Research System</button>
 
     <div id="out" class="output" style="display:none;"></div>
 
-    <button id="copyBtn" class="copy-btn" style="display:none;" onclick="copyOutput()">
-      Copy Output
+    <button id="copyBtn" style="display:none;background:#22c55e" onclick="copy()">
+      Copy Full System
     </button>
 
   </div>
@@ -109,80 +110,112 @@
 
 <script>
 
-let lastOutput = "";
+let last = "";
 
 function generate(){
 
   const topic = document.getElementById('topic').value.trim();
   const depth = document.getElementById('depth').value;
+  const mode = document.getElementById('mode').value;
 
   if(!topic){
-    alert("Enter a topic");
+    alert("Enter topic");
     return;
   }
 
-  const levels = {
-    simple: 3,
+  const config = {
+    basic: 3,
     standard: 5,
     deep: 7
   };
 
-  const steps = levels[depth];
+  const steps = config[depth];
 
-  const output = buildSystem(topic, steps);
+  const system = buildSystem(topic, steps, mode);
 
-  lastOutput = output;
+  last = system;
 
   const out = document.getElementById('out');
   out.style.display = "block";
-  out.textContent = output;
+  out.textContent = system;
 
   document.getElementById('copyBtn').style.display = "block";
 }
 
-function buildSystem(topic, steps){
+function buildSystem(topic, steps, mode){
 
   const questions = [
-    `What are the main trends in ${topic}?`,
-    `Who are the key players in ${topic}?`,
-    `What real-world impact does ${topic} have?`,
-    `What are the limitations of ${topic}?`
+    `What specific real-world use cases exist for ${topic}?`,
+    `What measurable impact does ${topic} create in real businesses?`,
+    `What are the highest ROI applications of ${topic}?`,
+    `Where does ${topic} fail or underperform?`
   ];
 
-  const planBase = [
-    "Market overview analysis",
-    "Real-world case studies",
-    "Data extraction & comparison",
-    "Insight generation",
-    "Final conclusions"
-  ];
+  const plans = [
+    "Map real-world implementations (not theory)",
+    "Identify measurable performance metrics",
+    "Compare traditional vs AI-driven workflows",
+    "Analyze cost vs ROI structure",
+    "Identify adoption barriers",
+    "Extract actionable insights"
+  ].slice(0, steps);
 
   const prompts = [
-    `Analyze real-world use cases of ${topic} and extract measurable results`,
-    `Compare traditional vs modern approaches in ${topic}`,
-    `Identify ROI and productivity impact of ${topic}`,
-    `Find adoption barriers and risks in ${topic}`
+    `Break down real workflows of ${topic} and identify automation opportunities`,
+    `Analyze ROI impact of ${topic} in small business environments`,
+    `Compare efficiency before vs after ${topic} adoption`,
+    `Identify hidden costs and limitations of ${topic}`,
+    `Generate decision framework: should a business adopt ${topic}?`
   ];
 
-  const plan = planBase.slice(0, steps);
+  const outputFramework = `
+DECISION INTELLIGENCE OUTPUT:
+
+1. Market Reality Map
+   - real usage (not theory)
+
+2. Workflow Transformation Analysis
+   - before vs after structure
+
+3. ROI Breakdown
+   - time, cost, output
+
+4. Adoption Strategy
+   - when to use / when NOT to use
+
+5. Risk Analysis
+   - failure points + hidden costs
+
+6. Final Decision Guide
+   - adopt / avoid / partial use
+`;
+
+  const modeNote = {
+    business: "Focus: business ROI + cost efficiency",
+    productivity: "Focus: workflow speed + time savings",
+    market: "Focus: adoption trends + competition"
+  };
 
   return `
 ==============================
-RESEARCH SYSTEM
+RESEARCH COPILOT v3
 ==============================
 
 TOPIC:
 ${topic}
 
+MODE:
+${modeNote[mode]}
+
 ------------------------------
-KEY RESEARCH QUESTIONS
+HIGH VALUE QUESTIONS
 ------------------------------
 ${questions.map(q=>"• "+q).join("\n")}
 
 ------------------------------
-RESEARCH PLAN
+EXECUTION PLAN
 ------------------------------
-${plan.map(p=>"• "+p).join("\n")}
+${plans.map(p=>"• "+p).join("\n")}
 
 ------------------------------
 AI EXECUTION PROMPTS
@@ -190,28 +223,29 @@ AI EXECUTION PROMPTS
 ${prompts.map(p=>"• "+p).join("\n")}
 
 ------------------------------
-OUTPUT BLUEPRINT
+OUTPUT FRAMEWORK
 ------------------------------
-1. Market landscape
-2. Real case studies
-3. Key insights
-4. Opportunities
-5. Risks & limitations
+${outputFramework}
 
 ------------------------------
-FINAL NOTE
+CRITICAL RULES
 ------------------------------
-This system is ready for execution.
+- No generic explanations
+- Focus on real-world data
+- Prioritize measurable impact
+- Avoid marketing language
+
+------------------------------
+FINAL OUTPUT TYPE:
+Decision-grade research system
 `;
 }
 
-function copyOutput(){
-
-  if(!lastOutput) return;
-
-  navigator.clipboard.writeText(lastOutput)
-    .then(()=> alert("Copied to clipboard"))
-    .catch(()=> alert("Copy failed"));
+function copy(){
+  if(!last) return;
+  navigator.clipboard.writeText(last)
+    .then(()=> alert("Copied"))
+    .catch(()=> alert("Failed"));
 }
 
 </script>
