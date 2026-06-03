@@ -3,568 +3,175 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Universal Prompt Builder — MultiLang</title>
+<title>Research Prompt Generator</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-  :root{
-    --bg1:#f5f7fb; --bg2:#e8eefc;
-    --card:#ffffff; --muted:#6b7280; --accent:#4568dc; --accent-2:#b06ab3;
-    --success:#27ae60;
-    --radius:14px;
-  }
-  *{box-sizing:border-box}
   body{
-    margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background: linear-gradient(135deg,var(--bg1),var(--bg2)); color:#0f172a; -webkit-font-smoothing:antialiased;
-    padding:30px 20px;
+    margin:0;
+    font-family:Inter, sans-serif;
+    background:#0b1220;
+    color:#e5e7eb;
+    padding:30px;
   }
-  .wrap{
-    max-width:980px; margin:0 auto;
+
+  .container{
+    max-width:900px;
+    margin:auto;
   }
+
+  h1{
+    font-size:22px;
+    margin-bottom:6px;
+  }
+
+  p{
+    color:#9ca3af;
+    margin-top:0;
+  }
+
   .card{
-    background:var(--card); border-radius:var(--radius);
-    padding:26px; box-shadow: 0 12px 40px rgba(18, 38, 63, 0.08);
+    background:#111827;
+    padding:20px;
+    border-radius:12px;
+    margin-top:20px;
   }
-  header{display:flex; gap:16px; align-items:center; margin-bottom:18px;}
-  .logo{
-    width:62px; height:62px; border-radius:12px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:20px;
-    box-shadow: 0 6px 20px rgba(66,99,255,0.18);
+
+  label{
+    display:block;
+    margin-top:12px;
+    font-size:13px;
+    color:#cbd5e1;
   }
-  h1{font-size:20px; margin:0}
-  p.lead{margin:6px 0 0; color:var(--muted); font-size:14px}
 
-  /* layout */
-  .grid{
-    display:grid; grid-template-columns: 1fr 380px; gap:20px;
+  input, select{
+    width:100%;
+    padding:10px;
+    margin-top:6px;
+    border-radius:8px;
+    border:1px solid #1f2937;
+    background:#0f172a;
+    color:#e5e7eb;
   }
-  @media (max-width:980px){ .grid{ grid-template-columns:1fr } }
 
-  /* left ----- */
-  .form-group{margin-top:12px}
-  label{display:block; font-weight:600; margin-bottom:8px; color:#0f172a}
-  input[type="text"], select, textarea{
-    width:100%; padding:12px 14px; border-radius:10px; border:1px solid #e6e9f2; background:#fbfdff;
-    font-size:14px; color:#0f172a;
+  button{
+    margin-top:16px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#3b82f6;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
   }
-  textarea{min-height:110px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; resize:vertical}
-  .row{display:flex; gap:12px}
-  .row .col{flex:1}
 
-  .small{font-size:13px; color:var(--muted); margin-top:6px}
-
-  .controls{display:flex; gap:10px; align-items:center; margin-top:14px}
-  .btn{
-    padding:10px 14px; border-radius:10px; border:0; cursor:pointer; font-weight:600;
-    background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#fff; box-shadow:0 8px 20px rgba(69,104,220,0.18);
+  button:hover{
+    background:#2563eb;
   }
-  .btn.ghost{background:transparent; color:var(--accent); border:1px solid rgba(69,104,220,0.12); box-shadow:none; font-weight:600}
-  .btn.copy{background:linear-gradient(90deg,#2ecc71,#27ae60)}
 
-  /* right panel */
-  .panel{ background: linear-gradient(180deg,#ffffff, #fbfdff); border-radius:12px; padding:14px; border:1px solid #eef2ff }
-  .panel h3{margin:0; font-size:15px}
-  .languages{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
-  .lang-chip {
-    padding:8px 10px; border-radius:9px; border:1px solid #e6e9f2; background:#fff; cursor:pointer; font-weight:600; font-size:13px;
+  .output{
+    white-space:pre-wrap;
+    background:#0f172a;
+    padding:16px;
+    border-radius:10px;
+    margin-top:16px;
+    border:1px solid #1f2937;
   }
-  .lang-chip input{display:none}
-  .lang-chip.active{ background: linear-gradient(90deg,var(--accent),var(--accent-2)); color:#fff; border-color:transparent; box-shadow: 0 8px 20px rgba(69,104,220,0.12) }
 
-  .output-box{ margin-top:12px; border-radius:10px; padding:12px; background:#0b1220; color:#e6eefc; min-height:160px; white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:13px}
-  .output-actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
-  .action{ padding:8px 10px; border-radius:9px; border:0; cursor:pointer; color:#fff; font-weight:600 }
-  .action.copy{ background: linear-gradient(90deg,#2ecc71,#27ae60) }
-  .action.download{ background: linear-gradient(90deg,#f59e0b,#f97316) }
-  .action.share{ background: linear-gradient(90deg,#06b6d4,#0ea5b8) }
-
-  /* helper */
-  .muted{color:var(--muted); font-size:13px}
-  .divider{height:1px; background:#eef2ff; margin:12px 0; border-radius:4px}
-  .note{font-size:13px;color:var(--muted); margin-top:8px}
+  .small{
+    font-size:12px;
+    color:#6b7280;
+    margin-top:6px;
+  }
 </style>
 </head>
+
 <body>
-<div class="wrap">
+
+<div class="container">
+
+  <h1>Research Prompt Generator</h1>
+  <p>Turn any idea into structured research plan + AI prompts</p>
+
   <div class="card">
-    <header>
-      <div class="logo">AI</div>
-      <div>
-        <h1>Universal Prompt Builder</h1>
-        <p class="lead">Build any prompt — choose language(s), role, task, constraints & style. Generate, copy, download or share instantly.</p>
-      </div>
-    </header>
 
-    <div class="grid">
-      <!-- LEFT: form -->
-      <div>
-        <div class="form-group row">
-          <div class="col">
-            <label id="labelLang">Interface Language</label>
-            <select id="uiLang" onchange="switchUiLang()">
-              <option value="en" selected>English</option>
-              <option value="fa">فارسی</option>
-              <option value="ar">العربية</option>
-              <option value="tr">Türkçe</option>
-              <option value="de">Deutsch</option>
-              <option value="fr">Français</option>
-            </select>
-            <div class="small">UI language - only changes labels / placeholders.</div>
-          </div>
-          <div class="col">
-            <label id="labelOutputLangs">Output Languages</label>
-            <select id="outputLangSelect" multiple style="height:46px;padding:8px">
-              <option value="en" selected>English</option>
-              <option value="fa">فارسی</option>
-              <option value="ar">العربية</option>
-              <option value="tr">Türkçe</option>
-              <option value="de">Deutsch</option>
-              <option value="fr">Français</option>
-            </select>
-            <div class="small">Select one or more languages (Ctrl/Cmd+click to multi-select)</div>
-          </div>
-        </div>
+    <label>Research Topic</label>
+    <input id="topic" placeholder="e.g. AI tools for startups, competitor analysis, market trend...">
 
-        <div class="form-group">
-          <label id="labelRole">Role (who the AI should act as)</label>
-          <input id="role" type="text" placeholder="e.g., Expert SEO Specialist / نقش: متخصص سئو">
-          <div class="small">Optional — useful to refine tone and knowledge level.</div>
-        </div>
+    <label>Output Depth</label>
+    <select id="depth">
+      <option value="simple">Simple</option>
+      <option value="standard" selected>Standard</option>
+      <option value="deep">Deep Research</option>
+    </select>
 
-        <div class="form-group">
-          <label id="labelTask">Task (what to do)</label>
-          <input id="task" type="text" placeholder='e.g., Write an Instagram caption about "X" - وظیفه: ...'>
-        </div>
+    <button onclick="generate()">Generate Research System</button>
 
-        <div class="form-group row">
-          <div class="col">
-            <label id="labelType">Content Type</label>
-            <select id="type">
-              <option>Instagram Caption</option>
-              <option>Blog Article</option>
-              <option>Marketing Email</option>
-              <option>Social Media Post</option>
-              <option>Product Description</option>
-              <option>Technical Documentation</option>
-            </select>
-          </div>
-          <div class="col">
-            <label id="labelStyle">Style</label>
-            <select id="style">
-              <option>Short & Concise</option>
-              <option>Formal & Professional</option>
-              <option>Fun & Engaging</option>
-              <option>Detailed & Analytical</option>
-              <option>Beginner Friendly</option>
-            </select>
-          </div>
-        </div>
+    <div id="out" class="output" style="display:none;"></div>
 
-        <div class="form-group">
-          <label id="labelConstraints">Constraints / Extra Instructions</label>
-          <textarea id="constraints" placeholder="e.g., max 150 characters; include emoji; add 3 hashtags..."></textarea>
-          <div class="small">Add constraints, required keywords, formatting rules, examples, etc.</div>
-        </div>
-
-        <div class="form-group">
-          <label id="labelCustom">Custom prompt template (optional)</label>
-          <textarea id="custom" placeholder='Use placeholders: {role}, {task}, {type}, {style}, {constraints}, {topic}'></textarea>
-          <div class="small">If filled, this template will be used. Example: "Act as {role}. {task}. Constraints: {constraints}."</div>
-        </div>
-
-        <div class="controls">
-          <button class="btn" id="genBtn" onclick="handleGenerate()"><i class="fa-solid fa-robot"></i>&nbsp; Generate</button>
-          <button class="btn ghost" onclick="clearAll()">Clear</button>
-          <div style="flex:1"></div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="note"><strong>Tip:</strong> For best results, be specific in Role + Task + Constraints. Use the custom template for advanced formats (system+user examples).</div>
-      </div>
-
-      <!-- RIGHT: outputs -->
-      <aside>
-        <div class="panel">
-          <h3 id="panelTitle">Outputs</h3>
-          <div class="muted" style="margin-top:8px">Selected output languages:</div>
-          <div id="langChips" class="languages" aria-hidden="false"></div>
-
-          <div class="divider"></div>
-
-          <div id="outputsContainer"></div>
-
-          <div style="margin-top:12px" class="output-actions">
-            <button class="action copy" onclick="copyAll()"><i class="fa-regular fa-copy"></i>&nbsp; Copy All</button>
-            <button class="action download" onclick="downloadAll()"><i class="fa-regular fa-file-arrow-down"></i>&nbsp; Download .txt</button>
-            <button class="action share" onclick="shareAll()"><i class="fa-solid fa-share-nodes"></i>&nbsp; Share (open dialog)</button>
-          </div>
-        </div>
-      </aside>
-    </div>
   </div>
 </div>
 
 <script>
-/* -------------------------
-   Translations for UI only
-   ------------------------- */
-const uiTranslations = {
-  en: {
-    labels: {
-      role: "Role (who the AI should act as)",
-      task: "Task (what to do)",
-      type: "Content Type",
-      style: "Style",
-      constraints: "Constraints / Extra Instructions",
-      custom: "Custom prompt template (optional)",
-      outputLangs: "Output Languages"
-    },
-    placeholders: {
-      role: "e.g., Expert SEO Specialist",
-      task: 'e.g., Write an Instagram caption about "X"',
-      constraints: "e.g., max 150 chars; include emoji; add 3 hashtags",
-      custom: "Use {role}, {task}, {type}, {style}, {constraints}, {topic}"
-    },
-    panelTitle: "Outputs"
-  },
-  fa: {
-    labels: {
-      role: "نقش (چه نقشی ایفا کند)",
-      task: "وظیفه (چه کاری انجام دهد)",
-      type: "نوع محتوا",
-      style: "سبک",
-      constraints: "محدودیت‌ها / دستورالعمل اضافی",
-      custom: "قالب سفارشی پرامپت (اختیاری)",
-      outputLangs: "زبان‌های خروجی"
-    },
-    placeholders: {
-      role: "مثلاً: متخصص سئو",
-      task: 'مثلاً: نوشتن کپشن اینستاگرام درباره "X"',
-      constraints: "مثلاً: حداکثر ۱۵۰ کاراکتر؛ شامل ایموجی؛ ۳ هشتگ",
-      custom: "از {role}, {task}, {type}, {style}, {constraints}, {topic} استفاده کن"
-    },
-    panelTitle: "خروجی‌ها"
-  },
-  ar: {
-    labels: {
-      role: "الدور (ما الذي يجب أن يقوم به الذكاء الاصطناعي)",
-      task: "المهمة (ماذا تفعل)",
-      type: "نوع المحتوى",
-      style: "النمط",
-      constraints: "القيود / تعليمات إضافية",
-      custom: "قالب مخصص (اختياري)",
-      outputLangs: "لغات المخرجات"
-    },
-    placeholders: {
-      role: "مثلاً: خبير SEO",
-      task: 'مثلاً: كتابة تعليق إنستغرام عن "X"',
-      constraints: "مثلاً: 150 حرف كحد أقصى؛ يتضمن رموز تعبيرية؛ 3 هاشتاغ",
-      custom: "استخدم {role}, {task}, {type}, {style}, {constraints}, {topic}"
-    },
-    panelTitle: "المخرجات"
-  },
-  tr: {
-    labels: {
-      role: "Rol (AI hangi rolü üstlenmeli)",
-      task: "Görev (ne yapmalı)",
-      type: "İçerik Türü",
-      style: "Stil",
-      constraints: "Kısıtlamalar / Ek Talimatlar",
-      custom: "Özel şablon (isteğe bağlı)",
-      outputLangs: "Çıktı Dilleri"
-    },
-    placeholders: {
-      role: "örn. Uzman SEO Uzmanı",
-      task: 'örn. "X" hakkında Instagram başlığı yaz',
-      constraints: "örn. max 150 karakter; emoji ekle; 3 hashtag",
-      custom: "{role}, {task}, {type}, {style}, {constraints}, {topic} kullan"
-    },
-    panelTitle: "Çıktılar"
-  },
-  de: {
-    labels: {
-      role: "Rolle (wie soll die KI agieren)",
-      task: "Aufgabe (was tun)",
-      type: "Inhaltstyp",
-      style: "Stil",
-      constraints: "Einschränkungen / Zusätzliche Anweisungen",
-      custom: "Benutzerdefinierte Vorlage (optional)",
-      outputLangs: "Ausgabe-Sprachen"
-    },
-    placeholders: {
-      role: "z.B. Erfahrener SEO-Spezialist",
-      task: 'z.B. Schreibe eine Instagram-Beschreibung über "X"',
-      constraints: "z.B. max 150 Zeichen; Emojis einfügen; 3 Hashtags",
-      custom: "Nutze {role}, {task}, {type}, {style}, {constraints}, {topic}"
-    },
-    panelTitle: "Ausgaben"
-  },
-  fr: {
-    labels: {
-      role: "Rôle (quel rôle pour l'IA)",
-      task: "Tâche (quoi faire)",
-      type: "Type de contenu",
-      style: "Style",
-      constraints: "Contraintes / Instructions supplémentaires",
-      custom: "Modèle personnalisé (optionnel)",
-      outputLangs: "Langues de sortie"
-    },
-    placeholders: {
-      role: "ex. Expert SEO",
-      task: 'ex. Rédiger une légende Instagram sur "X"',
-      constraints: "ex. max 150 caractères; inclure emoji; 3 hashtags",
-      custom: "Utiliser {role}, {task}, {type}, {style}, {constraints}, {topic}"
-    },
-    panelTitle: "Sorties"
-  }
-};
 
-/* -------------------------
-   Core templates for each language
-   These will be filled with the user's inputs.
-   You can expand/adjust wording to be more elaborate per language.
-   ------------------------- */
-const promptTemplates = {
-  en: `Role: {role}
-Task: {task}
-Content Type: {type}
-Style: {style}
-Constraints / Extra: {constraints}
----
-Output should be ready to use, concise and user-friendly.`,
+function generate(){
 
-  fa: `نقش (Role): {role}
-وظیفه (Task): {task}
-نوع محتوا: {type}
-سبک: {style}
-محدودیت‌ها / اضافات: {constraints}
----
-خروجی باید آماده استفاده و بدون نیاز به ویرایش باشد.`,
+  const topic = document.getElementById('topic').value.trim();
+  const depth = document.getElementById('depth').value;
 
-  ar: `الدور (Role): {role}
-المهمة (Task): {task}
-نوع المحتوى: {type}
-النمط: {style}
-القيود / إضافات: {constraints}
----
-يجب أن يكون الناتج جاهزًا للاستخدام دون الحاجة لتحرير.`,
-
-  tr: `Rol: {role}
-Görev: {task}
-İçerik Türü: {type}
-Stil: {style}
-Kısıtlamalar / Ek: {constraints}
----
-Çıktı düzenleme gerektirmeden kullanıma hazır olmalıdır.`,
-
-  de: `Rolle: {role}
-Aufgabe: {task}
-Inhaltstyp: {type}
-Stil: {style}
-Einschränkungen / Zusatz: {constraints}
----
-Die Ausgabe muss ohne weitere Bearbeitung verwendbar sein.`,
-
-  fr: `Rôle: {role}
-Tâche: {task}
-Type de contenu: {type}
-Style: {style}
-Contraintes / Supplément: {constraints}
----
-Le résultat doit être prêt à l'emploi sans modification supplémentaire.`
-};
-
-/* -------------------------
-   Helpers and UI wiring
-   ------------------------- */
-
-function switchUiLang(){
-  const uiLang = document.getElementById('uiLang').value;
-  const t = uiTranslations[uiLang];
-
-  document.getElementById('labelRole').innerText = t.labels.role;
-  document.getElementById('labelTask').innerText = t.labels.task;
-  document.getElementById('labelType').innerText = t.labels.type;
-  document.getElementById('labelStyle').innerText = t.labels.style;
-  document.getElementById('labelConstraints').innerText = t.labels.constraints;
-  document.getElementById('labelCustom').innerText = t.labels.custom;
-  document.getElementById('labelOutputLangs').innerText = t.labels.outputLangs;
-  document.getElementById('panelTitle').innerText = t.panelTitle;
-
-  document.getElementById('role').placeholder = t.placeholders.role;
-  document.getElementById('task').placeholder = t.placeholders.task;
-  document.getElementById('constraints').placeholder = t.placeholders.constraints;
-  document.getElementById('custom').placeholder = t.placeholders.custom;
-}
-
-/* Render selected output languages as chips and prepare outputs area */
-function renderSelectedLangs(){
-  const sel = Array.from(document.getElementById('outputLangSelect').selectedOptions).map(o=>o.value);
-  const chips = document.getElementById('langChips');
-  chips.innerHTML = '';
-  sel.forEach(l=>{
-    const d = document.createElement('div');
-    d.className = 'lang-chip active';
-    d.textContent = languageName(l);
-    chips.appendChild(d);
-  });
-  // clear outputs area
-  document.getElementById('outputsContainer').innerHTML = '';
-}
-
-/* language friendly name */
-function languageName(code){
-  const map = { en:'English', fa:'فارسی', ar:'العربية', tr:'Türkçe', de:'Deutsch', fr:'Français' };
-  return map[code] || code;
-}
-
-/* core generate handler */
-function handleGenerate(){
-  // update selected langs visual
-  renderSelectedLangs();
-  // produce outputs
-  generateForSelected();
-}
-
-/* generate prompts for selected languages */
-function generateForSelected(){
-  const selected = Array.from(document.getElementById('outputLangSelect').selectedOptions).map(o=>o.value);
-  if(selected.length===0){ alert('Please select at least one output language.'); return; }
-
-  const role = document.getElementById('role').value.trim() || (selected.includes('fa')? 'مدل هوش مصنوعی' : 'AI Language Model');
-  const task = document.getElementById('task').value.trim();
-  if(!task){ alert('Please provide a Task / وظیفه.'); return; }
-  const type = document.getElementById('type').value;
-  const style = document.getElementById('style').value;
-  const constraints = document.getElementById('constraints').value.trim() || (selected.includes('fa')? 'بدون محدودیت خاص' : 'No special constraints');
-  const custom = document.getElementById('custom').value.trim();
-
-  const container = document.getElementById('outputsContainer');
-  container.innerHTML = '';
-
-  selected.forEach(lang=>{
-    const tpl = (custom && custom.length>0) ? custom : promptTemplates[lang] || promptTemplates['en'];
-    const filled = tpl.replaceAll('{role}', role)
-                      .replaceAll('{task}', task)
-                      .replaceAll('{type}', type)
-                      .replaceAll('{style}', style)
-                      .replaceAll('{constraints}', constraints)
-                      .replaceAll('{topic}', task);
-
-    // create block per language
-    const block = document.createElement('div');
-    block.style.marginTop = '12px';
-
-    const title = document.createElement('div');
-    title.style.display='flex'; title.style.justifyContent='space-between'; title.style.alignItems='center';
-
-    const left = document.createElement('div');
-    left.innerHTML = `<strong>${languageName(lang)}</strong> <span style="color:var(--muted); margin-left:8px; font-size:13px">${lang.toUpperCase()}</span>`;
-    title.appendChild(left);
-
-    const right = document.createElement('div');
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'action copy'; copyBtn.style.padding='6px 10px'; copyBtn.style.fontSize='13px'; copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>&nbsp; Copy';
-    copyBtn.onclick = ()=>{ copyText(filled); flash(copyBtn); };
-    const dlBtn = document.createElement('button');
-    dlBtn.className = 'action download'; dlBtn.style.padding='6px 10px'; dlBtn.style.fontSize='13px'; dlBtn.innerHTML = '<i class="fa-regular fa-file-arrow-down"></i>&nbsp; Download';
-    dlBtn.onclick = ()=>{ downloadText(filled, `prompt_${lang}.txt`); flash(dlBtn); };
-    right.appendChild(copyBtn); right.appendChild(dlBtn);
-    title.appendChild(right);
-
-    const out = document.createElement('pre');
-    out.className = 'output-box';
-    out.textContent = filled;
-    out.setAttribute('data-lang', lang);
-
-    block.appendChild(title);
-    block.appendChild(out);
-
-    container.appendChild(block);
-  });
-
-  // scroll into view
-  container.scrollIntoView({behavior:'smooth'});
-}
-
-/* small UI flash when copying / downloading */
-function flash(el){
-  const orig = el.style.transform;
-  el.style.transform = 'translateY(-4px)';
-  setTimeout(()=> el.style.transform = orig, 220);
-}
-
-/* copy single text */
-function copyText(txt){
-  if(!navigator.clipboard){ // fallback
-    const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
-    try{ document.execCommand('copy'); }catch(e){ console.error(e) } ta.remove();
-    alert('Copied to clipboard');
+  if(!topic){
+    alert("Enter a research topic");
     return;
   }
-  navigator.clipboard.writeText(txt).then(()=> alert('Copied to clipboard') ).catch(()=> alert('Copy failed'));
-}
 
-/* copy all outputs concatenated */
-function copyAll(){
-  const boxes = Array.from(document.querySelectorAll('.output-box'));
-  if(boxes.length===0){ alert('No outputs to copy. Generate first.'); return; }
-  const text = boxes.map(b=>`[${b.getAttribute('data-lang').toUpperCase()}]\n${b.textContent}`).join('\n\n---\n\n');
-  copyText(text);
-}
+  let complexity = "";
 
-/* download helper */
-function downloadText(text, filename='prompt.txt'){
-  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
-
-/* download all outputs as single file */
-function downloadAll(){
-  const boxes = Array.from(document.querySelectorAll('.output-box'));
-  if(boxes.length===0){ alert('No outputs to download. Generate first.'); return; }
-  const content = boxes.map(b=>`[${b.getAttribute('data-lang').toUpperCase()}]\n${b.textContent}`).join('\n\n===\n\n');
-  downloadText(content, 'prompts_all.txt');
-}
-
-/* share using navigator.share if available - else open a simple dialog (twitter fallback) */
-function shareAll(){
-  const boxes = Array.from(document.querySelectorAll('.output-box'));
-  if(boxes.length===0){ alert('No outputs to share. Generate first.'); return; }
-  const content = boxes.map(b=>`[${b.getAttribute('data-lang').toUpperCase()}]\n${b.textContent}`).join('\n\n===\n\n');
-
-  if(navigator.share){
-    navigator.share({ title:'AI Prompts', text: content }).catch(err=> console.log('Share canceled', err));
+  if(depth === "simple"){
+    complexity = "basic structured overview";
+  } else if(depth === "standard"){
+    complexity = "structured research plan with actionable steps";
   } else {
-    // fallback: open twitter intent with the first 280 chars and notify user
-    const short = content.slice(0, 250);
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(short)}`;
-    window.open(url,'_blank');
-    alert('Sharing fallback opened (Twitter). For full share, copy or download the prompts.');
+    complexity = "deep multi-layer research system with analysis, risks, and insights";
   }
-}
 
-/* share per network (not used directly but available) */
-function sharePromptNetwork(network, text){
-  const encoded = encodeURIComponent(text);
-  let url='';
-  if(network==='twitter') url = `https://twitter.com/intent/tweet?text=${encoded}`;
-  if(network==='whatsapp') url = `https://api.whatsapp.com/send?text=${encoded}`;
-  if(network==='telegram') url = `https://t.me/share/url?url=&text=${encoded}`;
-  if(network==='linkedin') url = `https://www.linkedin.com/sharing/share-offsite/?url=${encoded}`;
-  window.open(url,'_blank');
-}
+  const output = `
+You are a senior research analyst AI.
 
-/* initial wiring */
-document.getElementById('outputLangSelect').addEventListener('change', renderSelectedLangs);
-switchUiLang(); renderSelectedLangs();
+TOPIC:
+${topic}
+
+TASK:
+Create a ${complexity}.
+
+OUTPUT STRUCTURE:
+
+1. Key research questions
+2. What data should be collected
+3. Step-by-step research plan
+4. AI prompts for execution
+5. Expected final insights
+6. Potential risks or blind spots
+
+RULES:
+- Be structured
+- Be actionable
+- Avoid vague explanations
+- Focus on real-world usability
+
+---
+
+DELIVERABLE:
+A complete research system ready for execution.
+`;
+
+  const out = document.getElementById('out');
+  out.style.display = "block";
+  out.textContent = output;
+}
 
 </script>
+
 </body>
 </html>
