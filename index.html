@@ -3,14 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Research Prompt Generator</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Research Prompt System</title>
 
 <style>
   body{
     margin:0;
-    font-family:Inter, sans-serif;
+    font-family:system-ui, sans-serif;
     background:#0b1220;
     color:#e5e7eb;
     padding:30px;
@@ -38,17 +36,10 @@
     margin-top:20px;
   }
 
-  label{
-    display:block;
-    margin-top:12px;
-    font-size:13px;
-    color:#cbd5e1;
-  }
-
   input, select{
     width:100%;
     padding:10px;
-    margin-top:6px;
+    margin-top:8px;
     border-radius:8px;
     border:1px solid #1f2937;
     background:#0f172a;
@@ -56,7 +47,7 @@
   }
 
   button{
-    margin-top:16px;
+    margin-top:14px;
     width:100%;
     padding:12px;
     border:none;
@@ -80,10 +71,9 @@
     border:1px solid #1f2937;
   }
 
-  .small{
-    font-size:12px;
-    color:#6b7280;
-    margin-top:6px;
+  .copy-btn{
+    margin-top:10px;
+    background:#22c55e;
   }
 </style>
 </head>
@@ -92,29 +82,34 @@
 
 <div class="container">
 
-  <h1>Research Prompt Generator</h1>
-  <p>Turn any idea into structured research plan + AI prompts</p>
+  <h1>Research Prompt System</h1>
+  <p>Turn any idea into structured research + execution prompts</p>
 
   <div class="card">
 
-    <label>Research Topic</label>
-    <input id="topic" placeholder="e.g. AI tools for startups, competitor analysis, market trend...">
+    <input id="topic" placeholder="Enter your research topic...">
 
-    <label>Output Depth</label>
     <select id="depth">
       <option value="simple">Simple</option>
       <option value="standard" selected>Standard</option>
       <option value="deep">Deep Research</option>
     </select>
 
-    <button onclick="generate()">Generate Research System</button>
+    <button onclick="generate()">Generate System</button>
 
     <div id="out" class="output" style="display:none;"></div>
 
+    <button id="copyBtn" class="copy-btn" style="display:none;" onclick="copyOutput()">
+      Copy Output
+    </button>
+
   </div>
+
 </div>
 
 <script>
+
+let lastOutput = "";
 
 function generate(){
 
@@ -122,53 +117,101 @@ function generate(){
   const depth = document.getElementById('depth').value;
 
   if(!topic){
-    alert("Enter a research topic");
+    alert("Enter a topic");
     return;
   }
 
-  let complexity = "";
+  const levels = {
+    simple: 3,
+    standard: 5,
+    deep: 7
+  };
 
-  if(depth === "simple"){
-    complexity = "basic structured overview";
-  } else if(depth === "standard"){
-    complexity = "structured research plan with actionable steps";
-  } else {
-    complexity = "deep multi-layer research system with analysis, risks, and insights";
-  }
+  const steps = levels[depth];
 
-  const output = `
-You are a senior research analyst AI.
+  const output = buildSystem(topic, steps);
 
-TOPIC:
-${topic}
-
-TASK:
-Create a ${complexity}.
-
-OUTPUT STRUCTURE:
-
-1. Key research questions
-2. What data should be collected
-3. Step-by-step research plan
-4. AI prompts for execution
-5. Expected final insights
-6. Potential risks or blind spots
-
-RULES:
-- Be structured
-- Be actionable
-- Avoid vague explanations
-- Focus on real-world usability
-
----
-
-DELIVERABLE:
-A complete research system ready for execution.
-`;
+  lastOutput = output;
 
   const out = document.getElementById('out');
   out.style.display = "block";
   out.textContent = output;
+
+  document.getElementById('copyBtn').style.display = "block";
+}
+
+function buildSystem(topic, steps){
+
+  const questions = [
+    `What are the main trends in ${topic}?`,
+    `Who are the key players in ${topic}?`,
+    `What real-world impact does ${topic} have?`,
+    `What are the limitations of ${topic}?`
+  ];
+
+  const planBase = [
+    "Market overview analysis",
+    "Real-world case studies",
+    "Data extraction & comparison",
+    "Insight generation",
+    "Final conclusions"
+  ];
+
+  const prompts = [
+    `Analyze real-world use cases of ${topic} and extract measurable results`,
+    `Compare traditional vs modern approaches in ${topic}`,
+    `Identify ROI and productivity impact of ${topic}`,
+    `Find adoption barriers and risks in ${topic}`
+  ];
+
+  const plan = planBase.slice(0, steps);
+
+  return `
+==============================
+RESEARCH SYSTEM
+==============================
+
+TOPIC:
+${topic}
+
+------------------------------
+KEY RESEARCH QUESTIONS
+------------------------------
+${questions.map(q=>"• "+q).join("\n")}
+
+------------------------------
+RESEARCH PLAN
+------------------------------
+${plan.map(p=>"• "+p).join("\n")}
+
+------------------------------
+AI EXECUTION PROMPTS
+------------------------------
+${prompts.map(p=>"• "+p).join("\n")}
+
+------------------------------
+OUTPUT BLUEPRINT
+------------------------------
+1. Market landscape
+2. Real case studies
+3. Key insights
+4. Opportunities
+5. Risks & limitations
+
+------------------------------
+FINAL NOTE
+------------------------------
+This system is ready for execution.
+`;
+}
+
+function copyOutput(){
+
+  if(!lastOutput) return;
+
+  navigator.clipboard.writeText(lastOutput)
+    .then(()=> alert("Copied to clipboard"))
+    .catch(()=> alert("Copy failed"));
 }
 
 </script>
